@@ -58,7 +58,7 @@ export async function search(input) {
   if (!q) return [];
   const category = sourceKind(q);
   const tasks = SOURCES.filter(s=>s[2]===category).slice(0,12).map(async (source, index) => {
-    const searchUrl = SEARCH + "?q=" + encodeURIComponent("site:"+new URL(source[1]).hostname+" "+q);
+    const searchUrl = SEARCH + "?q=" + encodeURIComponent("site:"+source[1].replace(/^https?:\\/\\//, "").split("/")[0]+" "+q);
     try {
       const response = await kino.fetch(searchUrl,{headers:{Accept:"text/html"}});
       if (!response.ok) return [];
