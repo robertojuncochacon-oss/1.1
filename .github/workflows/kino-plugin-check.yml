@@ -1,0 +1,39 @@
+name: Validate Kino plugin
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate manifest and entry
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const manifest = JSON.parse(fs.readFileSync('kino-plugin.json', 'utf8'));
+          for (const key of ['id', 'name', 'version', 'apiVersion', 'entry', 'description', 'hosts', 'capabilities']) {
+            if (manifest[key] === undefined || manifest[key] === null) throw new Error('Missing manifest field: ' + key);
+          }
+          if (!fs.existsSync(manifest.entry)) throw new Error('Entry file not found: ' + manifest.entry);
+          if (!Array.isArray(manifest.hosts) || !manifest.hosts.length) throw new Error('hosts must be a non-empty array');
+          if (!Array.isArray(manifest.capabilities)) throw new Error('capabilities must be an array');
+          for (const capability of manifest.capabilities) {
+            if (!['search', 'home', 'browse', 'episodes', 'resolve'].includes(capability)) throw new Error('Unknown capability: ' + capability);
+            if (!fs.readFileSync(manifest.entry, 'utf8').includes('export async function ' + capability + '(')) throw new Error('Missing export: ' + capability);
+          }
+          console.log('Manifest and exports OK:', manifest.id, manifest.version);
+          NODE
+      - name: Check JavaScript syntax
+        run: node --check plugin.js
