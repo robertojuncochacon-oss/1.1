@@ -1,8 +1,8 @@
 {
   "id": "kbllb-media-index",
   "name": "KBLLB Plus",
-  "version": "1.2.4",
-  "apiVersion": 4,
+  "version": "1.2.5",
+  "apiVersion": 1,
   "entry": "plugin.js",
   "description": "Buscador KBLLB Plus para Kino TV: búsqueda web de películas, series, anime, dibujos, deportes y TV en directo. Abre las páginas de las fuentes externas; la reproducción depende del proveedor y de tus derechos de acceso.",
   "author": "robertojuncochacon-oss",
@@ -35,6 +35,5 @@
     "browse",
     "resolve"
   ],
-  "color": "#D62828",
-  "streamHosts": "any"
+  "color": "#D62828"
 }
